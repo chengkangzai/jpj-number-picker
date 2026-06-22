@@ -1,0 +1,13 @@
+{
+  "name": "jpj-number-picker",
+  "version": "1.0.0",
+  "description": "Browse & pick available JPJ direct-purchase registration numbers (static page + scanner).",
+  "type": "module",
+  "scripts": {
+    "scan": "node jpj-number-check.mjs"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "playwright": "^1.48.0"
+  }
+}
