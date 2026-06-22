@@ -71,6 +71,9 @@ endpoint is ZK's internal AU protocol (per-page-load component `uuid`s, a strict
 the actual UI with Playwright instead. The "Range" search returns a grid of available numbers per
 50-window, which the scanner walks across the series and de-duplicates into the pool you see here.
 
+**📖 Full reverse-engineering walkthrough → [WRITEUP.md](./WRITEUP.md)** — the dead-ends, the ZK
+protocol, the gotchas, and why the captcha is a deliberate stopping point.
+
 ## Disclaimer
 
 - **Not affiliated with JPJ** (Jabatan Pengangkutan Jalan Malaysia) or mySIKAP.
