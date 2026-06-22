@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JPJ Number Picker — JOHOR / JYY</title>
+<title>JPJ Number Picker</title>
 <style>
   :root{
     --bg:#0f1419; --card:#1a212b; --card2:#222c38; --line:#2d3a48;
@@ -38,7 +38,6 @@
   .rec .num{color:#fff}
   .why{display:block;color:var(--dim);font-size:11px;margin-top:5px}
   .count{color:var(--dim);font-size:13px;margin:8px 0 0}
-  /* selection bar */
   #selbar{position:fixed;left:0;right:0;bottom:0;background:#11181f;border-top:1px solid var(--line);
     padding:14px 24px;display:none;align-items:center;justify-content:center;gap:18px;z-index:10}
   #selbar.show{display:flex}
@@ -47,15 +46,16 @@
   #selbar button{background:var(--green);border:0;color:#04140a;font-weight:700;padding:10px 20px;border-radius:9px;cursor:pointer;font-size:14px}
   #selbar .ghost{background:transparent;border:1px solid var(--line);color:var(--dim)}
   .note{color:var(--dim);font-size:12px;margin-top:30px;border-top:1px solid var(--line);padding-top:14px}
+  .note a{color:var(--accent)}
   .legend{color:var(--dim);font-size:12px;margin-bottom:6px}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>🚗 JPJ Registration Number Picker</h1>
-  <div class="sub">State <b>JOHOR</b> · Series <b>JYY</b> · Direct purchase (fixed price) ·
-    Current counter ≈ <b>8794</b> · <b id="total">0</b> numbers available ·
-    <span style="color:var(--dim)">snapshot 2026-06-22</span></div>
+  <div class="sub">State <b id="mState">—</b> · Series <b id="mSeries">—</b> · Direct purchase (fixed price) ·
+    Current counter ≈ <b id="mCounter">—</b> · <b id="total">0</b> numbers available ·
+    <span style="color:var(--dim)" id="mAsof"></span></div>
 
   <div class="bar">
     <input id="q" type="search" placeholder="Search a number… e.g. 9249, *44, 92*">
@@ -75,27 +75,39 @@
     ⚠️ Availability is a snapshot — re-verify on mySIKAP before paying. Patterned/vanity numbers
     (8888, 9229, 9696…) are <b>not</b> sold here; JPJ reserves them for JPJeBid bidding.
     This page only helps you choose — purchase is done on the JPJ portal.
+    Not affiliated with JPJ. <a href="https://github.com/chengkangzai/jpj-number-picker">source</a>
   </div>
 </div>
 
 <div id="selbar">
   <span>Selected:</span>
-  <span class="big"><span class="pre">JYY</span> <span id="selNum">—</span> <span id="selTag" style="font-size:13px;color:var(--gold)"></span></span>
+  <span class="big"><span class="pre" id="selPre">—</span> <span id="selNum">—</span> <span id="selTag" style="font-size:13px;color:var(--gold)"></span></span>
   <button onclick="copySel()">Copy</button>
   <button class="ghost" onclick="clearSel()">Clear</button>
 </div>
 
-<script>
-// ---- live pool (JOHOR/JYY direct-purchase, scanned 2026-06-22) ----
-const POOL = [8794,8795,8849,8874,8902,8904,8905,8914,8917,8920,8924,8925,8927,8930,8931,8934,8937,8940,8941,8943,8945,8946,8947,8951,8952,8957,8965,8967,8971,8972,9013,9014,9016,9017,9023,9024,9031,9032,9034,9035,9036,9037,9040,9041,9042,9043,9044,9045,9046,9048,9051,9052,9053,9056,9057,9058,9059,9061,9063,9064,9065,9071,9072,9073,9074,9076,9079,9081,9084,9085,9086,9087,9124,9125,9130,9132,9134,9137,9140,9142,9144,9145,9146,9147,9150,9154,9156,9157,9162,9163,9164,9173,9174,9176,9184,9185,9204,9205,9214,9215,9216,9217,9224,9225,9230,9231,9234,9235,9240,9243,9245,9246,9249,9251,9252,9253,9254,9255,9257,9259,9263,9265,9267,9274,9275,9276,9281,9283,9287,9302,9304,9305,9314,9324,9327,9334,9340,9341,9342,9345,9347,9348,9349,9351,9352,9354,9356,9357,9361,9362,9364,9367,9370,9371,9372,9375,9376,9380,9382,9384,9387,9402,9405,9410,9413,9415,9417,9418,9421,9425,9427,9428,9430,9431,9432,9433,9434,9435,9437,9438,9441,9443,9447,9448,9451,9452,9453,9454,9455,9456,9457,9458,9460,9461,9462,9463,9466,9467,9471,9472,9473,9474,9475,9478,9479,9481,9482,9483,9486,9502,9503,9504,9506,9510,9512,9514,9517,9518,9523,9526,9530,9534,9536,9541,9542,9543,9544,9546,9547,9548,9560,9562,9563,9564,9567,9570,9571,9572,9573,9574,9576,9580,9581,9582,9583,9584,9587,9602,9604,9614,9620,9632,9634,9635,9637,9643,9644,9645,9647,9648,9650,9651,9653,9654,9670,9671,9674,9675,9679,9682,9694,9704,9705,9706,9710,9712,9714,9716,9724,9725,9726,9730,9732,9734,9736,9738,9740,9741,9743,9745,9748,9750,9752,9754,9756,9758,9760,9762,9765,9774,9775,9780,9781,9782,9783,9784,9785,9790,9802,9804,9805,9815,9817,9820,9834,9840,9841,9843,9846,9847,9851,9852,9856,9857,9862,9864,9870,9871,9874,9875,9946,9954];
+<!-- ===== regenerable data block: jpj-daily.mjs rewrites the contents of this tag ===== -->
+<script id="poolData" type="application/json">
+{"state":"JOHOR","series":"JYY","counter":8794,"updated":"2026-06-22","numbers":[8794,8795,8849,8874,8902,8904,8905,8914,8917,8920,8924,8925,8927,8930,8931,8934,8937,8940,8941,8943,8945,8946,8947,8951,8952,8957,8965,8967,8971,8972,9013,9014,9016,9017,9023,9024,9031,9032,9034,9035,9036,9037,9040,9041,9042,9043,9044,9045,9046,9048,9051,9052,9053,9056,9057,9058,9059,9061,9063,9064,9065,9071,9072,9073,9074,9076,9079,9081,9084,9085,9086,9087,9124,9125,9130,9132,9134,9137,9140,9142,9144,9145,9146,9147,9150,9154,9156,9157,9162,9163,9164,9173,9174,9176,9184,9185,9204,9205,9214,9215,9216,9217,9224,9225,9230,9231,9234,9235,9240,9243,9245,9246,9249,9251,9252,9253,9254,9255,9257,9259,9263,9265,9267,9274,9275,9276,9281,9283,9287,9302,9304,9305,9314,9324,9327,9334,9340,9341,9342,9345,9347,9348,9349,9351,9352,9354,9356,9357,9361,9362,9364,9367,9370,9371,9372,9375,9376,9380,9382,9384,9387,9402,9405,9410,9413,9415,9417,9418,9421,9425,9427,9428,9430,9431,9432,9433,9434,9435,9437,9438,9441,9443,9447,9448,9451,9452,9453,9454,9455,9456,9457,9458,9460,9461,9462,9463,9466,9467,9471,9472,9473,9474,9475,9478,9479,9481,9482,9483,9486,9502,9503,9504,9506,9510,9512,9514,9517,9518,9523,9526,9530,9534,9536,9541,9542,9543,9544,9546,9547,9548,9560,9562,9563,9564,9567,9570,9571,9572,9573,9574,9576,9580,9581,9582,9583,9584,9587,9602,9604,9614,9620,9632,9634,9635,9637,9643,9644,9645,9647,9648,9650,9651,9653,9654,9670,9671,9674,9675,9679,9682,9694,9704,9705,9706,9710,9712,9714,9716,9724,9725,9726,9730,9732,9734,9736,9738,9740,9741,9743,9745,9748,9750,9752,9754,9756,9758,9760,9762,9765,9774,9775,9780,9781,9782,9783,9784,9785,9790,9802,9804,9805,9815,9817,9820,9834,9840,9841,9843,9846,9847,9851,9852,9856,9857,9862,9864,9870,9871,9874,9875,9946,9954]}
+</script>
 
+<script>
+const DATA = JSON.parse(document.getElementById('poolData').textContent);
+let POOL = DATA.numbers.slice().sort((a,b)=>a-b);
+const PRE = DATA.series;
 const pad = n => String(n).padStart(4,'0');
 
-// pattern detection -> short tag, '' if plain
+document.getElementById('mState').textContent   = DATA.state;
+document.getElementById('mSeries').textContent  = DATA.series;
+document.getElementById('mCounter').textContent = DATA.counter;
+document.getElementById('mAsof').textContent    = 'snapshot ' + DATA.updated;
+document.getElementById('selPre').textContent   = DATA.series;
+document.title = `JPJ Number Picker — ${DATA.state} / ${DATA.series}`;
+
 function pattern(n){
   const d = pad(n).split('').map(Number); const [a,b,c,e]=d;
   if(a===b&&b===c&&c===e) return 'AAAA';
-  if(a===e&&b===c)        return 'mirror';   // X-YY-X
+  if(a===e&&b===c)        return 'mirror';
   if(a===b&&c===e)        return 'AABB';
   if(a===c&&b===e)        return 'ABAB';
   if((a===b&&b===c)||(b===c&&c===e)) return 'triple';
@@ -107,28 +119,18 @@ function pattern(n){
   if(b===c) return 'mid .XX.';
   return '';
 }
-
-// memorability score for recommendations
 function score(n){
   const d = pad(n).split('').map(Number); const [a,b,c,e]=d;
   let s=0; const p=pattern(n);
-  if(p==='mirror') s+=6;
-  if(p==='AABB'||p==='ABAB') s+=6;
-  if(p==='triple') s+=7;
-  if(p==='run↑'||p==='run↓') s+=6;
-  if(p==='pair ..XX') s+=4;
-  if(p==='pair XX..') s+=3;
-  if(p==='mid .XX.') s+=3;
-  if(p==='ends X..X') s+=4;
-  const uniq = new Set(d).size;
-  s += (4-uniq);                       // fewer distinct digits = easier
-  if(e===0) s+=2;                      // ends in 0
+  const w={mirror:6,AABB:6,ABAB:6,triple:7,'run↑':6,'run↓':6,'pair ..XX':4,'pair XX..':3,'mid .XX.':3,'ends X..X':4};
+  if(w[p]) s+=w[p];
+  s += (4 - new Set(d).size);
+  if(e===0) s+=2;
   if(a===b||c===e) s+=1;
   return s;
 }
 
 let selected=null, activeFilter='all', query='';
-
 const FILTERS=[['all','All'],['rec','★ Memorable'],['pair ..XX','..XX'],['pair XX..','XX..'],['ends X..X','X__X'],['mid .XX.','_XX_'],['triple','Triple']];
 const chipsEl=document.getElementById('chips');
 FILTERS.forEach(([k,label])=>{
@@ -136,7 +138,6 @@ FILTERS.forEach(([k,label])=>{
   c.onclick=()=>{document.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));c.classList.add('on');activeFilter=k;render();};
   chipsEl.appendChild(c);
 });
-
 document.getElementById('q').addEventListener('input',e=>{query=e.target.value.trim();render();});
 document.getElementById('total').textContent=POOL.length;
 document.getElementById('allCount').textContent='('+POOL.length+')';
@@ -144,24 +145,23 @@ document.getElementById('allCount').textContent='('+POOL.length+')';
 function matchQuery(n){
   if(!query) return true;
   const str=pad(n);
-  if(query.includes('*')){ // wildcard
+  if(query.includes('*')){
     const re=new RegExp('^'+query.replace(/[^\d*]/g,'').replace(/\*/g,'\\d')+'$');
     return re.test(str);
   }
   return str.includes(query.replace(/\D/g,''));
 }
-
 function plateCard(n,withWhy){
   const p=pattern(n);
   const div=document.createElement('div');
   div.className='plate'+(selected===n?' sel':'');
-  div.innerHTML=`<div><span class="pre">JYY</span> <span class="num">${pad(n)}</span></div>`+
+  div.innerHTML=`<div><span class="pre">${PRE}</span> <span class="num">${pad(n)}</span></div>`+
     (p?`<span class="tag">${p}</span>`:'')+
-    (withWhy?`<span class="why">${whyText(n,p)}</span>`:'');
+    (withWhy?`<span class="why">${whyText(p)}</span>`:'');
   div.onclick=()=>{selected=n;render();showSel();};
   return div;
 }
-function whyText(n,p){
+function whyText(p){
   if(p==='mirror') return 'reads same shape — easy';
   if(p==='triple') return 'three same digits';
   if(p==='AABB'||p==='ABAB') return 'rhythmic pattern';
@@ -172,16 +172,13 @@ function whyText(n,p){
   if(p==='mid .XX.') return 'twin middle';
   return 'clean & low-distinct';
 }
-
 function render(){
-  // recommendations: top scored, only show when not filtering/searching narrowly
   const recEl=document.getElementById('rec');
-  const recs=[...POOL].map(n=>[n,score(n)]).filter(([,s])=>s>=4).sort((x,y)=>y[1]-x[1]||x[0]-y[0]).slice(0,12).map(x=>x[0]);
+  const recs=POOL.map(n=>[n,score(n)]).filter(([,s])=>s>=4).sort((x,y)=>y[1]-x[1]||x[0]-y[0]).slice(0,12).map(x=>x[0]);
   recEl.innerHTML='';
   recs.forEach(n=>recEl.appendChild(plateCard(n,true)));
   document.getElementById('recWrap').style.display=(activeFilter==='all'&&!query)?'block':'none';
 
-  // all list w/ filter
   const allEl=document.getElementById('all');
   allEl.innerHTML='';
   let list=POOL.filter(matchQuery);
@@ -195,7 +192,7 @@ function showSel(){const b=document.getElementById('selbar');b.classList.add('sh
   document.getElementById('selNum').textContent=pad(selected);
   const p=pattern(selected);document.getElementById('selTag').textContent=p?'['+p+']':'';}
 function clearSel(){selected=null;document.getElementById('selbar').classList.remove('show');render();}
-function copySel(){navigator.clipboard?.writeText('JYY '+pad(selected));const btn=event.target;const t=btn.textContent;btn.textContent='Copied ✓';setTimeout(()=>btn.textContent=t,1200);}
+function copySel(){navigator.clipboard?.writeText(PRE+' '+pad(selected));const btn=event.target;const t=btn.textContent;btn.textContent='Copied ✓';setTimeout(()=>btn.textContent=t,1200);}
 
 render();
 </script>

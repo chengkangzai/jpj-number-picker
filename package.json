@@ -4,7 +4,8 @@
   "description": "Browse & pick available JPJ direct-purchase registration numbers (static page + scanner).",
   "type": "module",
   "scripts": {
-    "scan": "node jpj-number-check.mjs"
+    "scan": "node jpj-number-check.mjs",
+    "refresh": "node jpj-daily.mjs"
   },
   "license": "MIT",
   "dependencies": {
